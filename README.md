@@ -1,2 +1,2 @@
 # WhiteNoiseStream
- A page that a user can listen to white noise.
+ An html page that a user can listen to white noise. 
