@@ -10,9 +10,9 @@
         }
 
         h1 {
-            color: #333;
-            font-size: 32px;
-            margin-bottom: 40px;
+        color: #333;
+        font-size: 32px;
+        margin-bottom: 40px;
         }
 
         .container {
@@ -22,7 +22,7 @@
         }
 
         .volume-slider {
-            width: 300px;
+            width: 70%;
             margin-bottom: 40px;
         }
 
@@ -58,6 +58,8 @@
 
         .buttons {
             display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 20px;
             font-family: futura;
         }
@@ -78,6 +80,7 @@
         .buttons button:hover {
             background-color: #555;
         }
+
     </style>
 </head>
 <body>
@@ -98,13 +101,13 @@
         const playButton = document.getElementById("play");
         const pauseButton = document.getElementById("pause");
         const volumeSlider = document.getElementById("volume");
-
+    
         // Audio context and source nodes
         const audioContext = new AudioContext();
         let sourceNode;
         let gainNode;
         let isPlaying = false;
-
+    
         // White noise buffer
         const bufferSize = audioContext.sampleRate * 2;
         const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
@@ -112,19 +115,19 @@
         for (let i = 0; i < bufferSize; i++) {
             noiseData[i] = Math.random() * 2 - 1;
         }
-
+    
         // Set up audio graph
         function setupAudio() {
             sourceNode = audioContext.createBufferSource();
             sourceNode.buffer = noiseBuffer;
             sourceNode.loop = true;
-
+    
             gainNode = audioContext.createGain();
             gainNode.gain.value = volumeSlider.value / 100;
-
+    
             sourceNode.connect(gainNode).connect(audioContext.destination);
         }
-
+    
         // Event listeners
         playButton.addEventListener("click", function() {
             if (!isPlaying) {
@@ -135,7 +138,7 @@
                 pauseButton.disabled = false;
             }
         });
-
+    
         pauseButton.addEventListener("click", function() {
             if (isPlaying) {
                 sourceNode.stop();
@@ -144,12 +147,13 @@
                 pauseButton.disabled = true;
             }
         });
-
+    
         volumeSlider.addEventListener("input", function() {
             if (gainNode) {
                 gainNode.gain.value = volumeSlider.value / 100;
             }
         });
     </script>
+    
 </body>
 </html>
