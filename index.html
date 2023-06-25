@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .volume-slider {
+            width: 300px;
+            margin-bottom: 40px;
+        }
+
+        .volume-label {
+            font-size: 18px;
+            color: #666;
+            margin-right: 10px;
+        }
+
+        .volume-slider input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            background-color: #f2f2f2;
+            height: 10px;
+            border-radius: 5px;
+            outline: none;
+            margin: 0;
+        }
+
+        .volume-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background-color: #000000;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .volume-slider input[type="range"]::-webkit-slider-thumb:hover {
+            background-color: #302f2f;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .buttons button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .buttons button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>White Noise Player</h1>
+        <div class="volume-slider">
+            <label class="volume-label" for="volume">Volume:</label>
+            <input type="range" id="volume" min="0" max="100" value="50" step="1">
+        </div>
+        <div class="buttons">
+            <button id="play">Play</button>
+            <button id="pause">Pause</button>
+        </div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const playButton = document.getElementById("play");
+        const pauseButton = document.getElementById("pause");
+        const volumeSlider = document.getElementById("volume");
+
+        // Audio context and source nodes
+        const audioContext = new AudioContext();
+        let sourceNode;
+        let gainNode;
+        let isPlaying = false;
+
+        // White noise buffer
+        const bufferSize = audioContext.sampleRate * 2;
+        const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const noiseData = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            noiseData[i] = Math.random() * 2 - 1;
+        }
+
+        // Set up audio graph
+        function setupAudio() {
+            sourceNode = audioContext.createBufferSource();
+            sourceNode.buffer = noiseBuffer;
+            sourceNode.loop = true;
+
+            gainNode = audioContext.createGain();
+            gainNode.gain.value = volumeSlider.value / 100;
+
+            sourceNode.connect(gainNode).connect(audioContext.destination);
+        }
+
+        // Event listeners
+        playButton.addEventListener("click", function() {
+            if (!isPlaying) {
+                setupAudio();
+                sourceNode.start();
+                isPlaying = true;
+                playButton.disabled = true;
+                pauseButton.disabled = false;
+            }
+        });
+
+        pauseButton.addEventListener("click", function() {
+            if (isPlaying) {
+                sourceNode.stop();
+                isPlaying = false;
+                playButton.disabled = false;
+                pauseButton.disabled = true;
+            }
+        });
+
+        volumeSlider.addEventListener("input", function() {
+            if (gainNode) {
+                gainNode.gain.value = volumeSlider.value / 100;
+            }
+        });
+    </script>
+</body>
+</html>
